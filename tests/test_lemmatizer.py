@@ -1,8 +1,8 @@
 import pytest
 
-from lemmatizer_be.lemmatizer import Lemmatizer
+from lemmatizer_be.lemmatizer import BnkorpusLemmatizer
 
-lemmatizer = Lemmatizer()
+lemmatizer = BnkorpusLemmatizer()
 
 words_lemmas = (
     ("амлету", ["амлет"]),
@@ -16,6 +16,6 @@ words_lemmas = (
 )
 
 
-@pytest.mark.parametrize("word,lemma", words_lemmas)
+@pytest.mark.parametrize(("word", "lemma"), words_lemmas)
 def test_word_lemma(word, lemma):
     assert set(lemmatizer.lemmatize(word)) == set(lemma)

@@ -175,4 +175,5 @@ cython_debug/
 
 # region Custom section
 bnkorpus/
+data/
 # endregion

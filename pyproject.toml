@@ -1,29 +1,71 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [project]
 name = "lemmatizer_be"
-version = "0.0.1"
-description = "Lemmatizer for Belarusian language (based on bnkorpus.info)"
-authors = [
-    { name = "Alexander Rusakevich", email = "mr.alexander.rusakevich@gmail.com" },
-]
-license = { text = "MIT" }
+dynamic = ["version"]
+description = 'Lemmatizer for Belarusian language (based on bnkorpus.info)'
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.8"
+license = "MIT"
+keywords = []
+authors = [
+  { name = "Alexander Rusakevich", email = "mr.alexander.rusakevich@gmail.com" },
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+]
 dependencies = [
-    "tqdm (>=4.67.1,<5.0.0)",
-    "requests (>=2.32.3,<3.0.0)",
-    "lxml (>=5.3.0,<6.0.0)",
+  "tqdm (>=4.67.1,<5.0.0)",
+  "requests (>=2.32.3,<3.0.0)",
+  "lxml (>=5.3.0,<6.0.0)",
 ]
 
-[build-system]
-requires = ["poetry-core>=2.0.0,<3.0.0"]
-build-backend = "poetry.core.masonry.api"
+[project.urls]
+Documentation = "https://github.com/alex-rusakevich/lemmatizer_be#readme"
+Issues = "https://github.com/alex-rusakevich/lemmatizer_be/issues"
+Source = "https://github.com/alex-rusakevich/lemmatizer_be"
 
-# [tool.poetry]
-# packages = [{ include = "lemmatizer_be" }]
+[tool.hatch.version]
+path = "src/lemmatizer_be/__about__.py"
 
-[tool.poetry.scripts]
-generate = "lemmatizer_be.generate:main"
+[tool.hatch.envs.types]
+extra-dependencies = ["mypy>=1.0.0"]
+[tool.hatch.envs.types.scripts]
+check = "mypy --install-types --non-interactive --ignore-missing-imports {args:src/lemmatizer_be tests}"
 
-[tool.poetry.group.dev.dependencies]
-pytest = "^8.3.4"
+[tool.coverage.run]
+source_pkgs = ["lemmatizer_be", "tests"]
+branch = true
+parallel = true
+omit = ["src/lemmatizer_be/__about__.py"]
 
+[tool.coverage.paths]
+lemmatizer_be = ["src/lemmatizer_be"]
+tests = ["tests"]
+
+[tool.coverage.report]
+exclude_lines = ["no cov", "if __name__ == .__main__.:", "if TYPE_CHECKING:"]
+
+[tool.ruff.lint]
+extend-select = ["D"]
+ignore = ["RUF001", "RUF002", "RUF003", "SIM115"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["ALL"]
+"src/lemmatizer_be/__about__.py" = ["D100"]
+
+[tool.hatch.envs.default.scripts]
+generate = "python src/lemmatizer_be/generate.py"
+
+[tool.lint.pydocstyle]
+convention = "numpy"
