@@ -81,10 +81,6 @@ def main():
                     if form_text not in data_dict:
                         data_dict[form_text] = set()
 
-                    if paradigm_lemma == "касы":
-                        print("Памылка. Форма", form_text)
-                        print("Парадыгма", paradigm_lemma)
-
                     data_dict[form_text].add(paradigm_lemma)
 
         print("OK")
