@@ -65,9 +65,7 @@ def main():  # noqa: D103
         else:
             changeable[k] = list_v
 
-    print(
-        f"Found {len(leaveable):_} words to be left unchanged and {len(changeable):_} changeable words"
-    )
+    print(f"Found {len(leaveable):_} words to be left unchanged and {len(changeable):_} changeable words")
 
     # region Writing data
     changeable_file_path = DATA_DIR / "change.json"
@@ -79,9 +77,7 @@ def main():  # noqa: D103
         separators=(",", ":"),
     )
 
-    print(
-        f"The changeable file size is {changeable_file_path.stat().st_size / 1024 / 1024:2f} MB"
-    )
+    print(f"The changeable file size is {changeable_file_path.stat().st_size / 1024 / 1024:2f} MB")
 
     leaveable_file_path = DATA_DIR / "leave.txt"
 
@@ -90,9 +86,7 @@ def main():  # noqa: D103
             f.write(word)
             f.write("\n")
 
-    print(
-        f"The leaveable file size is {leaveable_file_path.stat().st_size / 1024 / 1024:2f} MB"
-    )
+    print(f"The leaveable file size is {leaveable_file_path.stat().st_size / 1024 / 1024:2f} MB")
     # endregion
 
     # region Compressing
