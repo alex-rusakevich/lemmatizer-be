@@ -4,7 +4,7 @@
 
 import json
 import sys
-import tarfile
+import zipfile
 from pathlib import Path
 
 from lxml import etree
@@ -65,7 +65,9 @@ def main():  # noqa: D103
         else:
             changeable[k] = list_v
 
-    print(f"Found {len(leaveable):_} words to be left unchanged and {len(changeable):_} changeable words")
+    print(
+        f"Found {len(leaveable):_} words to be left unchanged and {len(changeable):_} changeable words"
+    )
 
     # region Writing data
     changeable_file_path = DATA_DIR / "change.json"
@@ -77,7 +79,9 @@ def main():  # noqa: D103
         separators=(",", ":"),
     )
 
-    print(f"The changeable file size is {changeable_file_path.stat().st_size / 1024 / 1024:2f} MB")
+    print(
+        f"The changeable file size is {changeable_file_path.stat().st_size / 1024 / 1024:2f} MB"
+    )
 
     leaveable_file_path = DATA_DIR / "leave.txt"
 
@@ -86,15 +90,22 @@ def main():  # noqa: D103
             f.write(word)
             f.write("\n")
 
-    print(f"The leaveable file size is {leaveable_file_path.stat().st_size / 1024 / 1024:2f} MB")
+    print(
+        f"The leaveable file size is {leaveable_file_path.stat().st_size / 1024 / 1024:2f} MB"
+    )
     # endregion
 
     # region Compressing
-    arc_path = DATA_DIR / "lemma_data.tar.gz"
+    arc_path = DATA_DIR / "lemma_data.zip"
 
-    with tarfile.open(str(arc_path.resolve()), "w:gz") as tar:
-        tar.add(str(changeable_file_path.resolve()), arcname="change.json")
-        tar.add(str(leaveable_file_path.resolve()), arcname="leave.txt")
+    with zipfile.ZipFile(
+        str(arc_path.resolve()),
+        mode="w",
+        compression=zipfile.ZIP_DEFLATED,
+        compresslevel=6,
+    ) as zip_file:
+        zip_file.write(str(changeable_file_path.resolve()), "change.json")
+        zip_file.write(str(leaveable_file_path.resolve()), "leave.txt")
 
     print(f"The arc file size is {arc_path.stat().st_size / 1024 / 1024:2f} MB")
     # endregion

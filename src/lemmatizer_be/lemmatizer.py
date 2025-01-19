@@ -5,8 +5,12 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from lemmatizer_be._utils import _fetch_unzip
+
 DATA_DIR = Path(Path(__file__).parent.parent.parent, "data")
 DATA_DIR.mkdir(parents=True, exist_ok=True)
+
+LEMMA_DATA_URL = "https://github.com/alex-rusakevich/lemmatizer-be/releases/latest/download/lemma_data.zip"
 
 
 class BnkorpusLemmatizer:
@@ -14,7 +18,17 @@ class BnkorpusLemmatizer:
 
     def __init__(self):
         """Load the lemma dictionaries into memory."""
-        self._changeable = json.loads((DATA_DIR / "change.json").read_text(encoding="utf8"))
+        if (
+            not (DATA_DIR / "change.json").is_file()
+            or not (DATA_DIR / "leave.txt").is_file()
+        ):
+            if not (DATA_DIR / "lemma_data.tar.gz").is_file():
+                _fetch_unzip(LEMMA_DATA_URL, DATA_DIR)
+                print("The lemmatizer's data has been loaded successfully.")
+
+        self._changeable = json.loads(
+            (DATA_DIR / "change.json").read_text(encoding="utf8")
+        )
         self._unchangeable = (DATA_DIR / "leave.txt").read_text(encoding="utf8").split()
 
     def lemmatize(self, word: str) -> list[str]:
