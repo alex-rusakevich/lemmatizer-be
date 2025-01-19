@@ -20,13 +20,17 @@ class BnkorpusLemmatizer:
 
     def __init__(self):
         """Load the lemma dictionaries into memory."""
-        if (not (DATA_DIR / "change.json").is_file() or not (DATA_DIR / "leave.txt").is_file()) and not (
-            DATA_DIR / "lemma_data.tar.gz"
-        ).is_file():
+        if (
+            not (DATA_DIR / "change.json").is_file()
+            or not (DATA_DIR / "leave.txt").is_file()
+        ):
+            print("The lemmatizer's data is missing, downloading...")
             _fetch_unzip(LEMMA_DATA_URL, DATA_DIR)
             print("The lemmatizer's data has been downloaded successfully.")
 
-        self._changeable = json.loads((DATA_DIR / "change.json").read_text(encoding="utf8"))
+        self._changeable = json.loads(
+            (DATA_DIR / "change.json").read_text(encoding="utf8")
+        )
         self._unchangeable = (DATA_DIR / "leave.txt").read_text(encoding="utf8").split()
 
     def lemmatize(self, word: str) -> list[str]:
