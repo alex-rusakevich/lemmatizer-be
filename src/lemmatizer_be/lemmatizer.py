@@ -4,7 +4,7 @@
 
 from __future__ import annotations
 
-import json
+import csv
 from pathlib import Path
 
 from lemmatizer_be._utils import _fetch_unzip
@@ -28,9 +28,14 @@ class BnkorpusLemmatizer:
             _fetch_unzip(LEMMA_DATA_URL, DATA_DIR)
             print("The lemmatizer's data has been downloaded successfully.")
 
-        self._changeable = json.loads(
-            (DATA_DIR / "change.json").read_text(encoding="utf8")
-        )
+        self._changeable = {}
+
+        with open(DATA_DIR / "change.tsv", "r", encoding="utf8") as f:
+            tsv_file = csv.reader(f, delimiter="\t")
+
+            for line in tsv_file:
+                self._changeable[line[0]] = line[1].split(";")
+
         self._unchangeable = (DATA_DIR / "leave.txt").read_text(encoding="utf8").split()
 
     def lemmatize(self, word: str) -> list[str]:
