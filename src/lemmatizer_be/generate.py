@@ -100,7 +100,7 @@ def main():  # noqa: D103
         compression=zipfile.ZIP_DEFLATED,
         compresslevel=6,
     ) as zip_file:
-        zip_file.write(str(changeable_file_path.resolve()), "change.json")
+        zip_file.write(str(changeable_file_path.resolve()), "change.tsv")
         zip_file.write(str(leaveable_file_path.resolve()), "leave.txt")
 
     print(f"The arc file size is {arc_path.stat().st_size / 1024 / 1024:2f} MB")
