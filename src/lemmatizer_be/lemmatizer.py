@@ -7,7 +7,7 @@ from __future__ import annotations
 import csv
 from pathlib import Path
 
-from lemmatizer_be._utils import _fetch_unzip
+from lemmatizer_be._utils import _fetch_unzip, dir_empty
 
 DATA_DIR = Path(Path(__file__).parent.parent.parent, "data")
 DATA_DIR.mkdir(parents=True, exist_ok=True)
@@ -20,10 +20,7 @@ class BnkorpusLemmatizer:
 
     def __init__(self):
         """Load the lemma dictionaries into memory."""
-        if (
-            not (DATA_DIR / "change.json").is_file()
-            or not (DATA_DIR / "leave.txt").is_file()
-        ):
+        if dir_empty(DATA_DIR):
             print("The lemmatizer's data is missing, downloading...")
             _fetch_unzip(LEMMA_DATA_URL, DATA_DIR)
             print("The lemmatizer's data has been downloaded successfully.")
