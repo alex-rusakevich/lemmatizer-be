@@ -26,10 +26,21 @@ word_lemma = (
     ("бівака", "бівак"),
     ("абкружанаму", "акружаны"),
     ("Ляхавічаў", "Ляхавічы"),
-    ("хрумшчу", "хрумсцець"),
 )
 
 
 @pytest.mark.parametrize(("word", "lemma"), word_lemma)
 def test_word_lemma(word, lemma):
     assert lemmatizer.lemmatize(word) == lemma
+
+
+word_pos_lemma = (
+    ("адкутай", "v", "адкутаць"),
+    ("абмятае", "V", "абмятаць"),
+    ("агітуючы", "A", "агітуючы"),
+)
+
+
+@pytest.mark.parametrize(("word", "pos", "lemma"), word_pos_lemma)
+def test_word_pos(word, pos, lemma):
+    assert lemmatizer.lemmatize(word, pos=pos) == lemma

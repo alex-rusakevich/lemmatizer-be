@@ -27,15 +27,13 @@ class BnkorpusLemmatizer:
 
         self._changeable = {}
 
-        with open(DATA_DIR / "change.tsv", "r", encoding="utf8") as f:
+        with open(DATA_DIR / "lemma_data.tsv", encoding="utf8") as f:
             tsv_file = csv.reader(f, delimiter="\t")
 
             for line in tsv_file:
                 self._changeable[line[0]] = line[1].split(";")
 
-        self._unchangeable = (DATA_DIR / "leave.txt").read_text(encoding="utf8").split()
-
-    def lemmas(self, word: str) -> list[str]:
+    def lemmas(self, word: str, pos: str | None = None) -> list[str]:
         """Return list of all the lemmas for the word.
 
         Parameters
@@ -43,20 +41,39 @@ class BnkorpusLemmatizer:
         word : str
             the word lemmatizer finds lemmas for
 
+        pos : Optional[str]
+            part of speech letter, see https://bnkorpus.info/grammar.be.html.
+            ``None`` means "select all".
+
         Returns
         -------
         list[str]
             list of lemmas if any
 
         """
-        if word in self._unchangeable:
-            return [word]
+        lemmas = self._changeable.get(word, [])
 
-        lemma = self._changeable.get(word, None)
+        searched_pos = pos
 
-        return lemma
+        if isinstance(pos, str):
+            searched_pos = pos.upper()
 
-    def lemmatize(self, word: str) -> str:
+        filtered_lemmas = []
+
+        for lemma in lemmas:
+            lemma_text, lemma_pos = lemma.split("|")
+
+            if searched_pos is not None and lemma_pos != searched_pos:
+                continue
+
+            if not lemma_text:
+                lemma_text = word
+
+            filtered_lemmas.append(lemma_text)
+
+        return list(set(filtered_lemmas))
+
+    def lemmatize(self, word: str, pos: str | None = None) -> str:
         """Lemmatize ``word`` by picking the shortest of the possible lemmas.
 
         Uses ``self.lemmas()`` internally.
@@ -67,11 +84,15 @@ class BnkorpusLemmatizer:
         word : str
             the word lemmatizer finds lemma for
 
+        pos : Optional[str]
+            part of speech letter, see https://bnkorpus.info/grammar.be.html.
+            ``None`` means "select all".
+
         Returns
         -------
         str
             the lemma found by lemmatizer
 
         """
-        lemmas = self.lemmas(word)
+        lemmas = self.lemmas(word, pos=pos)
         return min(lemmas, key=len) if lemmas else word

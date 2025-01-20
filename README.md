@@ -13,7 +13,8 @@
 from lemmatizer_be import BnkorpusLemmatizer
 
 lm = BnkorpusLemmatizer()
-print(lm.lemmatize("алоўка"))
+print(lm.lemmatize("Мінску"))
+print(lm.lemmatize("алоўка", pos="N"))
 ```
 
 ## Падзякі

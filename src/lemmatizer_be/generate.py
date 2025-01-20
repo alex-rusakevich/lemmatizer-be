@@ -43,52 +43,41 @@ def main():  # noqa: D103
             paradigm_lemma = strip_plus(paradigm.get("lemma"))
 
             for variant in paradigm.findall("Variant"):
+                pos = paradigm.get("tag", variant.get("tag", "0"))[0]
+
                 for form in variant.findall("Form"):
                     form_text = strip_plus(form.text)
 
                     if form_text not in data_dict:
                         data_dict[form_text] = set()
 
-                    data_dict[form_text].add(paradigm_lemma)
+                    data_dict[form_text].add(paradigm_lemma + "|" + pos)
 
         print("OK")
 
     changeable = {}
-    leaveable = []
 
     for k, v in data_dict.items():
         list_v = list(v)
 
-        if len(list_v) == 1 and k == list_v[0]:
-            leaveable.append(k)
+        if len(list_v) == 1 and k == list_v[0].split("|")[0]:
+            changeable[k] = "|" + list_v[0].split("|")[1]
         else:
-            changeable[k] = list_v
+            changeable[k] = sorted(list_v)
 
-    print(
-        f"Found {len(leaveable):_} words to be left unchanged and {len(changeable):_} changeable words"
-    )
+    print(f"Found {len(changeable):_} words")
 
     # region Writing data
-    changeable_file_path = DATA_DIR / "change.tsv"
+    changeable_file_path = DATA_DIR / "lemma_data.tsv"
 
     with open(changeable_file_path, "w", encoding="utf8") as f:
         for word, lemmas in changeable.items():
-            f.write("{}\t{}\n".format(word, ";".join(lemmas)))
+            if isinstance(lemmas, list):
+                f.write("{}\t{}\n".format(word, ";".join(lemmas)))
+            else:
+                f.write(f"{word}\t{lemmas}\n")
 
-    print(
-        f"The changeable file size is {changeable_file_path.stat().st_size / 1024 / 1024:2f} MB"
-    )
-
-    leaveable_file_path = DATA_DIR / "leave.txt"
-
-    with open(leaveable_file_path, "w", encoding="utf8") as f:
-        for word in leaveable:
-            f.write(word)
-            f.write("\n")
-
-    print(
-        f"The leaveable file size is {leaveable_file_path.stat().st_size / 1024 / 1024:2f} MB"
-    )
+    print(f"The changeable file size is {(changeable_file_path.stat().st_size / 1024 / 1024):.2f} MB")
     # endregion
 
     # region Compressing
@@ -100,10 +89,9 @@ def main():  # noqa: D103
         compression=zipfile.ZIP_DEFLATED,
         compresslevel=6,
     ) as zip_file:
-        zip_file.write(str(changeable_file_path.resolve()), "change.tsv")
-        zip_file.write(str(leaveable_file_path.resolve()), "leave.txt")
+        zip_file.write(str(changeable_file_path.resolve()), "lemma_data.tsv")
 
-    print(f"The arc file size is {arc_path.stat().st_size / 1024 / 1024:2f} MB")
+    print(f"The arc file size is {(arc_path.stat().st_size / 1024 / 1024):.2f} MB")
     # endregion
 
 
