@@ -35,7 +35,7 @@ class BnkorpusLemmatizer:
             for line in tqdm(
                 tsv_file,
                 disable=no_progress_bar,
-                desc="Loading the dictionary...",
+                desc="Loading the dictionary into RAM",
                 total=int(Path(DATA_DIR / "lemma_data_info.txt").read_text()),
             ):
                 self._changeable[line[0]] = line[1].split(";")
