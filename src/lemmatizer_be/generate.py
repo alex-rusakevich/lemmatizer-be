@@ -77,9 +77,7 @@ def main():  # noqa: D103
             else:
                 f.write(f"{word}\t{lemmas}\n")
 
-    print(
-        f"The changeable file size is {(changeable_file_path.stat().st_size / 1024 / 1024):.2f} MB"
-    )
+    print(f"The changeable file size is {(changeable_file_path.stat().st_size / 1024 / 1024):.2f} MB")
     # endregion
 
     Path(DATA_DIR / "lemma_data_info.txt").write_text(str(len(changeable)))
