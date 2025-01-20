@@ -51,7 +51,7 @@ def main():  # noqa: D103
     uvicorn.run(
         app,
         host="localhost",
-        port=str(os.environ.get("PORT", "8093")),
+        port=int(os.environ.get("PORT", "8093")),
         log_level="info",
     )
 
