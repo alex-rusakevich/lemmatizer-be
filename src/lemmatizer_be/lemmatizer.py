@@ -38,18 +38,18 @@ class BnkorpusLemmatizer:
 
         self._unchangeable = (DATA_DIR / "leave.txt").read_text(encoding="utf8").split()
 
-    def lemmatize(self, word: str) -> list[str]:
-        """Return list of lemmas for the word.
+    def lemmas(self, word: str) -> list[str]:
+        """Return list of all the lemmas for the word.
 
         Parameters
         ----------
         word : str
-            the word lemmatizer makes lemmas for
+            the word lemmatizer finds lemmas for
 
         Returns
         -------
         list[str]
-            list of lemmas
+            list of lemmas if any
 
         """
         if word in self._unchangeable:
@@ -57,7 +57,24 @@ class BnkorpusLemmatizer:
 
         lemma = self._changeable.get(word, None)
 
-        if not lemma:
-            lemma = [word]
-
         return lemma
+
+    def lemmatize(self, word: str) -> str:
+        """Lemmatize ``word`` by picking the shortest of the possible lemmas.
+
+        Uses ``self.lemmas()`` internally.
+        Returns the input word unchanged if it cannot be found in WordNet.
+
+        Parameters
+        ----------
+        word : str
+            the word lemmatizer finds lemma for
+
+        Returns
+        -------
+        str
+            the lemma found by lemmatizer
+
+        """
+        lemmas = self.lemmas(word)
+        return min(lemmas, key=len) if lemmas else word
