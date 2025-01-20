@@ -39,7 +39,7 @@ Issues = "https://github.com/alex-rusakevich/lemmatizer_be/issues"
 Source = "https://github.com/alex-rusakevich/lemmatizer_be"
 
 [project.scripts]
-lemmatizer_be_server = "uvicorn lemmatizer_be.server.main:app"
+lemmatizer_be_server = "lemmatizer_be.server.main:main"
 
 [tool.hatch.version]
 path = "src/lemmatizer_be/__about__.py"

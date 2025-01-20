@@ -1,5 +1,8 @@
 """FastAPI server."""
 
+import os
+
+import uvicorn
 from fastapi import FastAPI, Response
 
 from lemmatizer_be import BnkorpusLemmatizer
@@ -42,3 +45,16 @@ def get_lemma(word: str) -> Response:
 
     """
     return {"result": lm.lemmatize(word)}
+
+
+def main():  # noqa: D103
+    uvicorn.run(
+        app,
+        host="localhost",
+        port=str(os.environ.get("PORT", "8093")),
+        log_level="info",
+    )
+
+
+if __name__ == "__main__":
+    main()
