@@ -64,6 +64,12 @@ ignore = ["RUF001", "RUF002", "RUF003", "SIM115", "FBT001", "FBT002"]
 "tests/*" = ["ALL"]
 "src/lemmatizer_be/__about__.py" = ["D100"]
 
+[tool.hatch.env]
+requires = ["hatch-pip-compile"]
+
+[tool.hatch.envs.default]
+type = "pip-compile"
+
 [tool.hatch.envs.default.scripts]
 generate = "python src/lemmatizer_be/generate.py"
 
