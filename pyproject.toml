@@ -28,12 +28,18 @@ dependencies = [
   "tqdm (>=4.67.1,<5.0.0)",
   "requests (>=2.32.3,<3.0.0)",
   "lxml (>=5.3.0,<6.0.0)",
+  "fastapi[standard]",
+  "a2wsgi",
+  "uvicorn[standard]",
 ]
 
 [project.urls]
 Documentation = "https://github.com/alex-rusakevich/lemmatizer_be#readme"
 Issues = "https://github.com/alex-rusakevich/lemmatizer_be/issues"
 Source = "https://github.com/alex-rusakevich/lemmatizer_be"
+
+[project.scripts]
+lemmatizer_be_server = "uvicorn lemmatizer_be.server.main:app"
 
 [tool.hatch.version]
 path = "src/lemmatizer_be/__about__.py"
@@ -72,6 +78,7 @@ type = "pip-compile"
 
 [tool.hatch.envs.default.scripts]
 generate = "python src/lemmatizer_be/generate.py"
+srv = "uvicorn lemmatizer_be.server.main:app"
 
 [tool.lint.pydocstyle]
 convention = "numpy"
