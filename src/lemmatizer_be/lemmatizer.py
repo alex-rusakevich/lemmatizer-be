@@ -9,7 +9,7 @@ from pathlib import Path
 
 from tqdm import tqdm
 
-from lemmatizer_be._utils import _fetch_unzip, dir_empty
+from lemmatizer_be._utils import _fetch_unzip, dir_empty, singleton
 
 DATA_DIR = Path(Path(__file__).parent.parent.parent, "data")
 DATA_DIR.mkdir(parents=True, exist_ok=True)
@@ -17,6 +17,7 @@ DATA_DIR.mkdir(parents=True, exist_ok=True)
 LEMMA_DATA_URL = "https://github.com/alex-rusakevich/lemmatizer-be/releases/latest/download/lemma_data.zip"
 
 
+@singleton
 class BnkorpusLemmatizer:
     """Belarusian language lemmatizer based on bnkorpus."""
 

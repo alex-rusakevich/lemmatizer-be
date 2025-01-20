@@ -13,7 +13,7 @@ from lemmatizer_be._utils import _fetch_unzip, dir_empty
 DATA_DIR = Path(Path(__file__).parent.parent.parent, "data")
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 
-BNKORPUS_DIR = Path(Path(__file__).parent.parent.parent, "bnkorpus")
+BNKORPUS_DIR = Path("~", ".alerus", "shared", "bnkorpus").expanduser()
 BNKORPUS_DIR.mkdir(parents=True, exist_ok=True)
 
 BNKORPUS_URL = "https://github.com/Belarus/GrammarDB/releases/download/RELEASE-202309/RELEASE-20230920.zip"
@@ -77,7 +77,9 @@ def main():  # noqa: D103
             else:
                 f.write(f"{word}\t{lemmas}\n")
 
-    print(f"The changeable file size is {(changeable_file_path.stat().st_size / 1024 / 1024):.2f} MB")
+    print(
+        f"The changeable file size is {(changeable_file_path.stat().st_size / 1024 / 1024):.2f} MB"
+    )
     # endregion
 
     Path(DATA_DIR / "lemma_data_info.txt").write_text(str(len(changeable)))

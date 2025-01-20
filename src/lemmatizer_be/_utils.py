@@ -32,3 +32,14 @@ def _fetch_unzip(zip_file_url: str, destination_dir: Path | str) -> Path:
     z.extractall(destination_dir)
 
     return Path(destination_dir)
+
+
+def singleton(cls):
+    instances = {}
+
+    def get_instance(*args, **kwargs):
+        if cls not in instances:
+            instances[cls] = cls(*args, **kwargs)
+        return instances[cls]
+
+    return get_instance
