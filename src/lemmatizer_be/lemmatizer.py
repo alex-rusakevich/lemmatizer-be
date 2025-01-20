@@ -7,6 +7,8 @@ from __future__ import annotations
 import csv
 from pathlib import Path
 
+from tqdm import tqdm
+
 from lemmatizer_be._utils import _fetch_unzip, dir_empty
 
 DATA_DIR = Path(Path(__file__).parent.parent.parent, "data")
@@ -18,7 +20,7 @@ LEMMA_DATA_URL = "https://github.com/alex-rusakevich/lemmatizer-be/releases/late
 class BnkorpusLemmatizer:
     """Belarusian language lemmatizer based on bnkorpus."""
 
-    def __init__(self):
+    def __init__(self, no_progress_bar: bool = False):
         """Load the lemma dictionaries into memory."""
         if dir_empty(DATA_DIR):
             print("The lemmatizer's data is missing, downloading...")
@@ -30,7 +32,12 @@ class BnkorpusLemmatizer:
         with open(DATA_DIR / "lemma_data.tsv", encoding="utf8") as f:
             tsv_file = csv.reader(f, delimiter="\t")
 
-            for line in tsv_file:
+            for line in tqdm(
+                tsv_file,
+                disable=no_progress_bar,
+                desc="Loading the dictionary...",
+                total=int(Path(DATA_DIR / "lemma_data_info.txt").read_text()),
+            ):
                 self._changeable[line[0]] = line[1].split(";")
 
     def lemmas(self, word: str, pos: str | None = None) -> list[str]:

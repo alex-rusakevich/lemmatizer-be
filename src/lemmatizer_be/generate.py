@@ -80,6 +80,8 @@ def main():  # noqa: D103
     print(f"The changeable file size is {(changeable_file_path.stat().st_size / 1024 / 1024):.2f} MB")
     # endregion
 
+    Path(DATA_DIR / "lemma_data_info.txt").write_text(str(len(changeable)))
+
     # region Compressing
     arc_path = DATA_DIR / "lemma_data.zip"
 
@@ -90,6 +92,7 @@ def main():  # noqa: D103
         compresslevel=6,
     ) as zip_file:
         zip_file.write(str(changeable_file_path.resolve()), "lemma_data.tsv")
+        zip_file.write(DATA_DIR / "lemma_data_info.txt", "lemma_data_info.txt")
 
     print(f"The arc file size is {(arc_path.stat().st_size / 1024 / 1024):.2f} MB")
     # endregion

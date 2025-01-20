@@ -58,7 +58,7 @@ exclude_lines = ["no cov", "if __name__ == .__main__.:", "if TYPE_CHECKING:"]
 
 [tool.ruff.lint]
 extend-select = ["D"]
-ignore = ["RUF001", "RUF002", "RUF003", "SIM115"]
+ignore = ["RUF001", "RUF002", "RUF003", "SIM115", "FBT001", "FBT002"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["ALL"]
