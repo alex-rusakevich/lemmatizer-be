@@ -5,13 +5,23 @@
 from __future__ import annotations
 
 import csv
+import os
 from pathlib import Path
 
 from tqdm import tqdm
 
 from lemmatizer_be._utils import _fetch_unzip, dir_empty, singleton
 
-DATA_DIR = Path(Path(__file__).parent.parent.parent, "data")
+DATA_DIR = Path(
+    os.environ.get(
+        "LEMMATIZER_BE_DATA_DIR",
+        Path(
+            "~",
+            ".alerus",
+            "shared",
+        ),
+    )
+).expanduser()
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 LEMMA_DATA_URL = "https://github.com/alex-rusakevich/lemmatizer-be/releases/latest/download/lemma_data.zip"

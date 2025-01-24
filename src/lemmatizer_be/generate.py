@@ -2,6 +2,7 @@
 
 # ruff: noqa: T201
 
+import os
 import sys
 import zipfile
 from pathlib import Path
@@ -10,7 +11,16 @@ from lxml import etree
 
 from lemmatizer_be._utils import _fetch_unzip, dir_empty
 
-DATA_DIR = Path(Path(__file__).parent.parent.parent, "data")
+DATA_DIR = Path(
+    os.environ.get(
+        "LEMMATIZER_BE_DATA_DIR",
+        Path(
+            "~",
+            ".alerus",
+            "shared",
+        ),
+    )
+).expanduser()
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 BNKORPUS_DIR = Path("~", ".alerus", "shared", "bnkorpus").expanduser()
@@ -60,10 +70,11 @@ def main():  # noqa: D103
     for k, v in data_dict.items():
         list_v = list(v)
 
-        if len(list_v) == 1 and k == list_v[0].split("|")[0]:
-            changeable[k] = "|" + list_v[0].split("|")[1]
-        else:
-            changeable[k] = sorted(list_v)
+        for i, val in enumerate(list_v):
+            if val.split("|")[0] == k:  # If form == lemma then write |A, not word|A
+                list_v[i] = "|" + list_v[0].split("|")[1]
+
+        changeable[k] = sorted(list_v, key=len)
 
     print(f"Found {len(changeable):_} words")
 
@@ -77,7 +88,9 @@ def main():  # noqa: D103
             else:
                 f.write(f"{word}\t{lemmas}\n")
 
-    print(f"The changeable file size is {(changeable_file_path.stat().st_size / 1024 / 1024):.2f} MB")
+    print(
+        f"The changeable file size is {(changeable_file_path.stat().st_size / 1024 / 1024):.2f} MB"
+    )
     # endregion
 
     Path(DATA_DIR / "lemma_data_info.txt").write_text(str(len(changeable)))
