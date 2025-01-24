@@ -21,7 +21,8 @@ DATA_DIR = Path(
             ".alerus",
             "shared",
         ),
-    )
+    ),
+    "lemma_data",
 ).expanduser()
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -100,7 +101,7 @@ def main():  # noqa: D103
             if val.split("|")[0] == k:  # If form == lemma then write |A, not word|A
                 list_v[i] = "|" + list_v[0].split("|")[1]
 
-        changeable[k] = sorted(list_v, key=len)
+        changeable[k] = sorted(set(list_v), key=len)
 
     print(f"Found {len(changeable):_} words")
 
@@ -120,7 +121,9 @@ def main():  # noqa: D103
 
     connection.commit()
 
-    print(f"The changeable db size is {(Path(db_path).stat().st_size / 1024 / 1024):.2f} MB")
+    print(
+        f"The changeable db size is {(Path(db_path).stat().st_size / 1024 / 1024):.2f} MB"
+    )
 
     cursor.execute("""VACUUM;""")
 
