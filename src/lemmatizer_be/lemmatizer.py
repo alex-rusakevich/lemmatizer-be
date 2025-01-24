@@ -36,7 +36,9 @@ class BnkorpusLemmatizer:
             _fetch_unzip(LEMMA_DATA_URL, DATA_DIR)
             print("The lemmatizer's data has been downloaded successfully.")
 
-        self._conn = sqlite3.connect(str(DATA_DIR / "lemma_data.sqlite3"), check_same_thread=False)
+        self._conn = sqlite3.connect(
+            str(DATA_DIR / "lemma_data.sqlite3"), check_same_thread=False
+        )
         # check_same_thread=False because we only read, but not change anything
         self._cursor = self._conn.cursor()
 
@@ -60,8 +62,10 @@ class BnkorpusLemmatizer:
         """
         self._cursor.execute("SELECT * FROM lemma_data WHERE form = ?", (word,))
         result = self._cursor.fetchone()
+        lemmas = []
 
-        lemmas = result[1].split(";")
+        if result:
+            lemmas = result[1].split(";")
 
         searched_pos = pos
 

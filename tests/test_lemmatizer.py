@@ -13,6 +13,7 @@ word_lemma_list = (
         ["каса", "касы"],
     ),  # Каса - валасы або каса з грашыма, касы - гэта чалавек з дадатковымі патрэбамі
     ("мех", ["мех"]),
+    ("марынованым", ["марынованы"]),
 )
 
 
@@ -44,3 +45,11 @@ word_pos_lemma = (
 @pytest.mark.parametrize(("word", "pos", "lemma"), word_pos_lemma)
 def test_word_pos(word, pos, lemma):
     assert lemmatizer.lemmatize(word, pos=pos) == lemma
+
+
+def test_lemmas_behavious_on_not_real_word():
+    assert lemmatizer.lemmas("бурдыздыхлікі") == []
+
+
+def test_lemmas_behavious_on_not_real_word():
+    assert lemmatizer.lemmatize("бурдыздыхлікі") == "бурдыздыхлікі"
