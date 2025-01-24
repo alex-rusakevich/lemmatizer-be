@@ -3,9 +3,9 @@
 import os
 
 import fastapi
-import starlette.status as status
 import uvicorn
 from fastapi import FastAPI, Response
+from starlette import status
 
 from lemmatizer_be import BnkorpusLemmatizer
 
@@ -59,9 +59,7 @@ def redirect_to_docs() -> Response:
         _description_
 
     """
-    return fastapi.responses.RedirectResponse(
-        "/docs", status_code=status.HTTP_302_FOUND
-    )
+    return fastapi.responses.RedirectResponse("/docs", status_code=status.HTTP_302_FOUND)
 
 
 def main():  # noqa: D103

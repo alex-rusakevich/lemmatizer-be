@@ -8,7 +8,7 @@ import os
 import sqlite3
 from pathlib import Path
 
-from lemmatizer_be._utils import _fetch_unzip, dir_empty, singleton
+from lemmatizer_be._utils import _fetch_unzip, dir_empty
 
 DATA_DIR = Path(
     os.environ.get(
@@ -25,7 +25,6 @@ DATA_DIR.mkdir(parents=True, exist_ok=True)
 LEMMA_DATA_URL = "https://github.com/alex-rusakevich/lemmatizer-be/releases/latest/download/lemma_data.zip"
 
 
-@singleton
 class BnkorpusLemmatizer:
     """Belarusian language lemmatizer based on bnkorpus."""
 
@@ -36,9 +35,7 @@ class BnkorpusLemmatizer:
             _fetch_unzip(LEMMA_DATA_URL, DATA_DIR)
             print("The lemmatizer's data has been downloaded successfully.")
 
-        self._conn = sqlite3.connect(
-            str(DATA_DIR / "lemma_data.sqlite3"), check_same_thread=False
-        )
+        self._conn = sqlite3.connect(str(DATA_DIR / "lemma_data.sqlite3"), check_same_thread=False)
         # check_same_thread=False because we only read, but not change anything
         self._cursor = self._conn.cursor()
 
