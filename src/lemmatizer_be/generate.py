@@ -108,7 +108,7 @@ def main():  # noqa: D103
     changeable = sorted(changeable.items(), key=lambda i: i[0])
 
     # region Writing data
-    for word, lemmas in tqdm(changeable, desc="Writing the data into sqlte3 db..."):
+    for word, lemmas in tqdm(changeable, desc="Writing the data into sqlite3 db..."):
         lemmas_val = ";".join(lemmas)
 
         sqlite_insert_with_param = """INSERT INTO lemma_data
@@ -120,7 +120,9 @@ def main():  # noqa: D103
 
     connection.commit()
 
-    print(f"The changeable db size is {(Path(db_path).stat().st_size / 1024 / 1024):.2f} MB")
+    print(
+        f"The changeable db size is {(Path(db_path).stat().st_size / 1024 / 1024):.2f} MB"
+    )
 
     cursor.execute("""VACUUM;""")
 
