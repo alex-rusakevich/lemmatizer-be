@@ -36,7 +36,10 @@ class BnkorpusLemmatizer:
             _fetch_unzip(LEMMA_DATA_URL, DATA_DIR)
             print("The lemmatizer's data has been downloaded successfully.")
 
-        self._conn = sqlite3.connect(str(DATA_DIR / "lemma_data.sqlite3"))
+        self._conn = sqlite3.connect(
+            str(DATA_DIR / "lemma_data.sqlite3"), check_same_thread=False
+        )
+        # check_same_thread=False because we only read, but not change anything
         self._cursor = self._conn.cursor()
 
     def lemmas(self, word: str, pos: str | None = None) -> list[str]:

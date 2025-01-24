@@ -2,6 +2,8 @@
 
 import os
 
+import fastapi
+import starlette.status as status
 import uvicorn
 from fastapi import FastAPI, Response
 
@@ -45,6 +47,21 @@ def get_lemma(word: str) -> Response:
 
     """
     return {"result": lm.lemmatize(word)}
+
+
+@app.get("/")
+def redirect_to_docs() -> Response:
+    """Redirect to docs when accessing /.
+
+    Returns
+    -------
+    Response
+        _description_
+
+    """
+    return fastapi.responses.RedirectResponse(
+        "/docs", status_code=status.HTTP_302_FOUND
+    )
 
 
 def main():  # noqa: D103
