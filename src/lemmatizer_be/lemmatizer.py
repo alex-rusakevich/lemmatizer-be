@@ -18,7 +18,8 @@ DATA_DIR = Path(
             ".alerus",
             "shared",
         ),
-    )
+    ),
+    "lemma_data",
 ).expanduser()
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 
