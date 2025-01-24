@@ -120,16 +120,12 @@ def main():  # noqa: D103
 
     connection.commit()
 
-    print(
-        f"The changeable db size is {(Path(db_path).stat().st_size / 1024 / 1024):.2f} MB"
-    )
+    print(f"The changeable db size is {(Path(db_path).stat().st_size / 1024 / 1024):.2f} MB")
 
     cursor.execute("""VACUUM;""")
 
     connection.close()
     # endregion
-
-    Path(DATA_DIR / "lemma_data_info.txt").write_text(str(len(changeable)))
 
     # region Compressing
     arc_path = DATA_DIR / "lemma_data.zip"
