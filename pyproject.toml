@@ -79,6 +79,7 @@ type = "pip-compile"
 [tool.hatch.envs.default.scripts]
 generate = "python src/lemmatizer_be/generate.py"
 srv = "uvicorn lemmatizer_be.server.main:app"
+timeit = "python src/lemmatizer_be/_timeit.py"
 
 [tool.lint.pydocstyle]
 convention = "numpy"

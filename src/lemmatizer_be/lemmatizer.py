@@ -4,11 +4,9 @@
 
 from __future__ import annotations
 
-import csv
 import os
+import sqlite3
 from pathlib import Path
-
-from tqdm import tqdm
 
 from lemmatizer_be._utils import _fetch_unzip, dir_empty, singleton
 
@@ -31,25 +29,15 @@ LEMMA_DATA_URL = "https://github.com/alex-rusakevich/lemmatizer-be/releases/late
 class BnkorpusLemmatizer:
     """Belarusian language lemmatizer based on bnkorpus."""
 
-    def __init__(self, no_progress_bar: bool = False):
-        """Load the lemma dictionaries into memory."""
+    def __init__(self):
+        """Connect to the lemma data sqlite3 db."""
         if dir_empty(DATA_DIR):
             print("The lemmatizer's data is missing, downloading...")
             _fetch_unzip(LEMMA_DATA_URL, DATA_DIR)
             print("The lemmatizer's data has been downloaded successfully.")
 
-        self._changeable = {}
-
-        with open(DATA_DIR / "lemma_data.tsv", encoding="utf8") as f:
-            tsv_file = csv.reader(f, delimiter="\t")
-
-            for line in tqdm(
-                tsv_file,
-                disable=no_progress_bar,
-                desc="Loading the dictionary into RAM",
-                total=int(Path(DATA_DIR / "lemma_data_info.txt").read_text()),
-            ):
-                self._changeable[line[0]] = line[1].split(";")
+        self._conn = sqlite3.connect(str(DATA_DIR / "lemma_data.sqlite3"))
+        self._cursor = self._conn.cursor()
 
     def lemmas(self, word: str, pos: str | None = None) -> list[str]:
         """Return list of all the lemmas for the word.
@@ -69,7 +57,10 @@ class BnkorpusLemmatizer:
             list of lemmas if any
 
         """
-        lemmas = self._changeable.get(word, [])
+        self._cursor.execute("SELECT * FROM lemma_data WHERE form = ?", (word,))
+        result = self._cursor.fetchone()
+
+        lemmas = result[1].split(";")
 
         searched_pos = pos
 

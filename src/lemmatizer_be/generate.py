@@ -3,11 +3,13 @@
 # ruff: noqa: T201
 
 import os
+import sqlite3
 import sys
 import zipfile
 from pathlib import Path
 
 from lxml import etree
+from tqdm import tqdm
 
 from lemmatizer_be._utils import _fetch_unzip, dir_empty
 
@@ -41,6 +43,30 @@ def main():  # noqa: D103
         _fetch_unzip(BNKORPUS_URL, BNKORPUS_DIR)
     else:
         print("OK")
+
+    # region Creating database
+    db_path = str(DATA_DIR / "lemma_data.sqlite3")
+    if Path(db_path).is_file():
+        os.remove(db_path)
+
+    connection = sqlite3.connect(db_path)
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS lemma_data (
+            form TEXT NOT NULL PRIMARY KEY,
+            lemmas TEXT NOT NULL
+        );
+    """)
+
+    # cursor.execute("""
+    #     CREATE INDEX IF NOT EXISTS index_forms ON lemma_data (form);
+    #                """)
+
+    print(f"Initialized empty db '{Path(db_path).resolve()}'")
+
+    connection.commit()
+    # endregion
 
     data_dict = {}
 
@@ -78,19 +104,27 @@ def main():  # noqa: D103
 
     print(f"Found {len(changeable):_} words")
 
+    # Sort by forms ascending
+    changeable = sorted(changeable.items(), key=lambda i: i[0])
+
     # region Writing data
-    changeable_file_path = DATA_DIR / "lemma_data.tsv"
+    for word, lemmas in tqdm(changeable, desc="Writing the data into sqlte3 db..."):
+        lemmas_val = ";".join(lemmas)
 
-    with open(changeable_file_path, "w", encoding="utf8") as f:
-        for word, lemmas in changeable.items():
-            if isinstance(lemmas, list):
-                f.write("{}\t{}\n".format(word, ";".join(lemmas)))
-            else:
-                f.write(f"{word}\t{lemmas}\n")
+        sqlite_insert_with_param = """INSERT INTO lemma_data
+                              (form, lemmas)
+                              VALUES (?, ?);"""
 
-    print(
-        f"The changeable file size is {(changeable_file_path.stat().st_size / 1024 / 1024):.2f} MB"
-    )
+        data_tuple = (word, lemmas_val)
+        cursor.execute(sqlite_insert_with_param, data_tuple)
+
+    connection.commit()
+
+    print(f"The changeable db size is {(Path(db_path).stat().st_size / 1024 / 1024):.2f} MB")
+
+    cursor.execute("""VACUUM;""")
+
+    connection.close()
     # endregion
 
     Path(DATA_DIR / "lemma_data_info.txt").write_text(str(len(changeable)))
@@ -104,8 +138,7 @@ def main():  # noqa: D103
         compression=zipfile.ZIP_DEFLATED,
         compresslevel=6,
     ) as zip_file:
-        zip_file.write(str(changeable_file_path.resolve()), "lemma_data.tsv")
-        zip_file.write(DATA_DIR / "lemma_data_info.txt", "lemma_data_info.txt")
+        zip_file.write(DATA_DIR / "lemma_data.sqlite3", "lemma_data.sqlite3")
 
     print(f"The arc file size is {(arc_path.stat().st_size / 1024 / 1024):.2f} MB")
     # endregion
