@@ -36,9 +36,7 @@ class BnkorpusLemmatizer:
             _fetch_unzip(LEMMA_DATA_URL, DATA_DIR)
             print("The lemmatizer's data has been downloaded successfully.")
 
-        self._conn = sqlite3.connect(
-            str(DATA_DIR / "lemma_data.sqlite3"), check_same_thread=False
-        )
+        self._conn = sqlite3.connect(str(DATA_DIR / "lemma_data.sqlite3"), check_same_thread=False)
 
     def lemmas(self, word: str, pos: str | None = None) -> list[str]:
         """Return list of all the lemmas for the word.

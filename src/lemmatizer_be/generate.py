@@ -36,13 +36,13 @@ BNKORPUS_URL = "https://github.com/Belarus/GrammarDB/releases/download/RELEASE-2
 
 
 INFO_TEXT = """
-База дадзеных лематызатара lemmatizer-be (https://github.com/alex-rusakevich/lemmatizer-be). 
+База дадзеных лематызатара lemmatizer-be (https://github.com/alex-rusakevich/lemmatizer-be).
 
-БД змяшчае {} адпаведнасцяў "форма → лемы". 
+БД змяшчае {} адпаведнасцяў "форма → лемы".
 
 Лемы запісаны праз кропку з коскай. Пасля кожнай лемы ідзе інфармацыя пра частку мовы ў фармаце |X, дзе X — гэта частка мовы (гл. https://bnkorpus.info/grammar.be.html).
 
-БД заснавана на граматычным корпусе праекту "Беларускі N-корпус", за што асаблівы дзякуй яго стваральнікам. 
+БД заснавана на граматычным корпусе праекту "Беларускі N-корпус", за што асаблівы дзякуй яго стваральнікам.
 """.strip()
 
 
@@ -135,9 +135,7 @@ def main():  # noqa: D103
 
     connection.commit()
 
-    print(
-        f"The changeable db size is {(Path(db_path).stat().st_size / 1024 / 1024):.2f} MB"
-    )
+    print(f"The changeable db size is {(Path(db_path).stat().st_size / 1024 / 1024):.2f} MB")
 
     cursor.execute("""VACUUM;""")
 
@@ -156,8 +154,7 @@ def main():  # noqa: D103
         zip_file.write(DATA_DIR / "lemma_data.sqlite3", "lemma_data.sqlite3")
         zip_file.writestr(
             "README.txt",
-            INFO_TEXT.format(locale.format_string("%d", len(changeable), grouping=True))
-            + "\n",
+            INFO_TEXT.format(locale.format_string("%d", len(changeable), grouping=True)) + "\n",
         )
 
     print(f"The arc file size is {(arc_path.stat().st_size / 1024 / 1024):.2f} MB")
