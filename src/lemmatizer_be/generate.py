@@ -2,6 +2,7 @@
 
 # ruff: noqa: T201
 
+import locale
 import os
 import sqlite3
 import sys
@@ -12,6 +13,8 @@ from lxml import etree
 from tqdm import tqdm
 
 from lemmatizer_be._utils import _fetch_unzip, dir_empty
+
+locale.setlocale(locale.LC_ALL, "be_BY.UTF-8")
 
 DATA_DIR = Path(
     os.environ.get(
@@ -30,6 +33,17 @@ BNKORPUS_DIR = Path("~", ".alerus", "shared", "bnkorpus").expanduser()
 BNKORPUS_DIR.mkdir(parents=True, exist_ok=True)
 
 BNKORPUS_URL = "https://github.com/Belarus/GrammarDB/releases/download/RELEASE-202309/RELEASE-20230920.zip"
+
+
+INFO_TEXT = """
+База дадзеных лематызатара lemmatizer-be (https://github.com/alex-rusakevich/lemmatizer-be). 
+
+БД змяшчае {} адпаведнасцяў "форма → лемы". 
+
+Лемы запісаны праз кропку з коскай. Пасля кожнай лемы ідзе інфармацыя пра частку мовы ў фармаце |X, дзе X — гэта частка мовы (гл. https://bnkorpus.info/grammar.be.html).
+
+БД заснавана на граматычным корпусе праекту "Беларускі N-корпус", за што асаблівы дзякуй яго стваральнікам. 
+""".strip()
 
 
 def strip_plus(word):  # noqa: D103
@@ -140,6 +154,11 @@ def main():  # noqa: D103
         compresslevel=6,
     ) as zip_file:
         zip_file.write(DATA_DIR / "lemma_data.sqlite3", "lemma_data.sqlite3")
+        zip_file.writestr(
+            "README.txt",
+            INFO_TEXT.format(locale.format_string("%d", len(changeable), grouping=True))
+            + "\n",
+        )
 
     print(f"The arc file size is {(arc_path.stat().st_size / 1024 / 1024):.2f} MB")
     # endregion
