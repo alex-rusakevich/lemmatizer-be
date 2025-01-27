@@ -1,8 +1,7 @@
 """Build lemma dictionary from bnkorpus."""
 
-# ruff: noqa: T201
-
 import locale
+import logging
 import os
 import sqlite3
 import sys
@@ -13,6 +12,8 @@ from lxml import etree
 from tqdm import tqdm
 
 from lemmatizer_be._utils import _fetch_unzip, dir_empty
+
+logger = logging.getLogger(__name__)
 
 locale.setlocale(locale.LC_ALL, "be_BY.UTF-8")
 
@@ -51,13 +52,9 @@ def strip_plus(word):  # noqa: D103
 
 
 def main():  # noqa: D103
-    print("bnkorpus status:", end=" ")
-
     if dir_empty(BNKORPUS_DIR):
-        print("missing. Downloading...")
+        logger.warning("BNK is missing. Downloading...")
         _fetch_unzip(BNKORPUS_URL, BNKORPUS_DIR)
-    else:
-        print("OK")
 
     # region Creating database
     db_path = str(DATA_DIR / "lemma_data.sqlite3")
@@ -78,7 +75,7 @@ def main():  # noqa: D103
     #     CREATE INDEX IF NOT EXISTS index_forms ON lemma_data (form);
     #                """)
 
-    print(f"Initialized empty db '{Path(db_path).resolve()}'")
+    logger.debug("Initialized empty db '%s'", Path(db_path).resolve())
 
     connection.commit()
     # endregion
@@ -87,7 +84,7 @@ def main():  # noqa: D103
 
     for xml_path in BNKORPUS_DIR.glob("*.xml"):
         tree = etree.fromstring(xml_path.read_bytes())  # noqa: S320
-        print(f"Loaded '{xml_path}'. Analyzing...", end=" ")
+        logger.info("Loaded '%s'. Analyzing...", xml_path)
         sys.stdout.flush()
 
         for paradigm in tree.findall("Paradigm"):
@@ -104,8 +101,6 @@ def main():  # noqa: D103
 
                     data_dict[form_text].add(paradigm_lemma + "|" + pos)
 
-        print("OK")
-
     changeable = {}
 
     for k, v in data_dict.items():
@@ -117,7 +112,7 @@ def main():  # noqa: D103
 
         changeable[k] = sorted(set(list_v), key=len)
 
-    print(f"Found {len(changeable):_} words")
+    logger.info("Found %d words", len(changeable))
 
     # Sort by forms ascending
     changeable = sorted(changeable.items(), key=lambda i: i[0])
@@ -135,7 +130,7 @@ def main():  # noqa: D103
 
     connection.commit()
 
-    print(f"The changeable db size is {(Path(db_path).stat().st_size / 1024 / 1024):.2f} MB")
+    logger.info("The changeable db size is %d MB", (Path(db_path).stat().st_size / 1024 / 1024))
 
     cursor.execute("""VACUUM;""")
 
@@ -157,7 +152,7 @@ def main():  # noqa: D103
             INFO_TEXT.format(locale.format_string("%d", len(changeable), grouping=True)) + "\n",
         )
 
-    print(f"The arc file size is {(arc_path.stat().st_size / 1024 / 1024):.2f} MB")
+    logger.info("The arc file size is %d MB", (arc_path.stat().st_size / 1024 / 1024))
     # endregion
 
 

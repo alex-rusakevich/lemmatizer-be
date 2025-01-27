@@ -1,15 +1,18 @@
 """The lemmatizer main file."""
 
-# ruff: noqa: T201
-
 from __future__ import annotations
 
+import logging
 import os
 import sqlite3
 from pathlib import Path
 from typing import Literal
 
 from lemmatizer_be._utils import _fetch_unzip, dir_empty, singleton
+from lemmatizer_be.exceptions import LemmatizerBeError
+
+logger = logging.getLogger(__name__)
+
 
 DATA_DIR = Path(
     os.environ.get(
@@ -46,9 +49,9 @@ class BnkorpusLemmatizer:
 
         """
         if dir_empty(DATA_DIR):
-            print("The lemmatizer's data is missing, downloading...")
+            logger.warning("The lemmatizer's data is missing, downloading...")
             _fetch_unzip(LEMMA_DATA_URL, DATA_DIR)
-            print("The lemmatizer's data has been downloaded successfully.")
+            logger.warning("The lemmatizer's data has been downloaded successfully.")
 
         if db_storage == "disk":
             self._conn = sqlite3.connect(str(DB_PATH), check_same_thread=False)
@@ -59,7 +62,8 @@ class BnkorpusLemmatizer:
             source_conn.backup(self._conn)
             source_conn.close()
         else:
-            raise Exception("Wrong db_storage value: {}".format(db_storage))
+            msg = f"Wrong db_storage value: {db_storage}"
+            raise LemmatizerBeError(msg)
 
     def lemmas(self, word: str, pos: str | None = None) -> list[str]:
         """Return list of all the lemmas for the word.
