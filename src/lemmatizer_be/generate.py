@@ -13,6 +13,12 @@ from tqdm import tqdm
 
 from lemmatizer_be._utils import _fetch_unzip, dir_empty
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    handlers=[logging.StreamHandler()],
+)
+
 logger = logging.getLogger(__name__)
 
 locale.setlocale(locale.LC_ALL, "be_BY.UTF-8")
