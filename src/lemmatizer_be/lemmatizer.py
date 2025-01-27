@@ -57,7 +57,7 @@ class BnkorpusLemmatizer:
             self._conn = sqlite3.connect(str(DB_PATH), check_same_thread=False)
         elif db_storage == "memory":
             source_conn = sqlite3.connect(str(DB_PATH))
-            self._conn = sqlite3.connect(":memory:")
+            self._conn = sqlite3.connect(":memory:", check_same_thread=False)
 
             source_conn.backup(self._conn)
             source_conn.close()
